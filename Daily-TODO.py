@@ -1,5 +1,5 @@
 # Daily TODO 2023-04-09
-# Copyright (C) 2023 by mt-cs (https://github.com/cs-mt)
+# Copyright (C) 2023 by cs-mt (https://github.com/cs-mt)
 
 import sqlite3
 from datetime import datetime 
