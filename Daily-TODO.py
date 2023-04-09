@@ -90,7 +90,7 @@ def printTODO(TODOList, all=False):
       print("| {:^4} | {:^60} | {:^22} |".format("ID", "Title", "Days"))
     else:
       print("="*98)
-      print("| {:^4} | {:^60} | {:^6} | {:^6} | {:^6} |".format("ID", "Title", "Start", "End", "Result"))
+      print("| {:^4} | {:^60} | {:^6} | {:^6} | {:^6} |".format("ID", "Title", "Start", "End", "Status"))
 
 
     for entry in TODOList:
