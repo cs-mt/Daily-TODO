@@ -2,7 +2,7 @@
 # Copyright (C) 2023 by cs-mt (https://github.com/cs-mt)
 
 import sqlite3
-from datetime import datetime 
+from datetime import datetime, date, timedelta
 import os 
 
 createTable = False
@@ -133,6 +133,9 @@ def printTODO(TODOList, all=False):
     else:
       print("="*98)
 
+    heatmap = getHeatmap()
+    print(heatmap)
+
 def markEntry(entryId, markAs):
     if markAs == "remove":
         cur.execute("UPDATE routines SET removed = 1 WHERE id = ?", (entryId,))
@@ -196,6 +199,45 @@ def addTODO():
 
     TODOList = getTODO()
     printTODO(TODOList) 
+
+def getHeatmap():
+    cur.execute("SELECT * FROM logs WHERE result='COMP'")
+    rows = cur.fetchall()
+
+    data = {}
+
+    for row in rows:
+        startDateTime = row[2]
+        dateObj = datetime.strptime(startDateTime, '%Y-%m-%d %H:%M:%S')
+        startDate = dateObj.strftime("%Y-%m-%d")
+
+        if startDate in data:
+            data[startDate] += 1
+        else:
+            data[startDate] = 1
+
+
+    day = (date.today()-timedelta(days=360))
+
+    out = ""
+
+    height = 10
+    width = 36
+    for y in range(height):
+        out += "\n"
+        for x in range(width):
+            day = (day+timedelta(days=1))
+            dayStr = day.strftime("%Y-%m-%d")
+            if dayStr in data:
+              if data[dayStr] == 1:
+                  out += "▓"
+              elif data[dayStr] >= 2:
+                  out += "█"
+            else:
+                out += "░"
+
+
+    return out
 
 def programLoop():
     TODOList = getTODO()
