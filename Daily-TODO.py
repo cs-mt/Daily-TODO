@@ -168,9 +168,17 @@ def markEntry(entryId, markAs):
     if markAs == "reset":
         cur.execute("DELETE FROM logs WHERE id = ?", (logid,))
     elif markAs == "start":
-        cur.execute("UPDATE logs SET started_time = ?, result = 'WIP' WHERE id = ?", (nowDateTime, logid))
+        # Check if the entry isn't marked as started.
+        cur.execute("SELECT COUNT(*) FROM logs WHERE id = ? AND result = 'NA'", (logid, ))
+        count = cur.fetchone()[0]
+        if count != 0:
+          cur.execute("UPDATE logs SET started_time = ?, result = 'WIP' WHERE id = ?", (nowDateTime, logid))
     elif markAs == "complete":
-        cur.execute("UPDATE logs SET finished_time = ?, result = 'COMP' WHERE id = ?", (nowDateTime, logid))
+        # Check if the entry is marked as started.
+        cur.execute("SELECT COUNT(*) FROM logs WHERE id = ? AND result = 'WIP'", (logid, ))
+        count = cur.fetchone()[0]
+        if count != 0:
+          cur.execute("UPDATE logs SET finished_time = ?, result = 'COMP' WHERE id = ?", (nowDateTime, logid))
 
     conn.commit()
 
@@ -252,6 +260,7 @@ def programLoop():
         print("(5) Add New TODO")
         print("(6) Show all routines")
         print("(7-[entry number]) Remove TODO")
+        print("(8) Clear Logs")
         print("")
         action = input("Choose one: ")
 
@@ -276,5 +285,13 @@ def programLoop():
         elif action.startswith("7-"):
             entryNumber = int(action.split("-")[1])
             markEntry(entryNumber, "remove")
+        elif action == "8":
+            confirm = input("Are you sure? This will delete all logs (YES/NO): ")
+
+            if confirm == "YES":
+                cur.execute("DELETE FROM logs")
+                conn.commit()
+                TODOList = getTODO()
+                printTODO(TODOList)
 
 programLoop()
