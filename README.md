@@ -2,4 +2,4 @@ A Python application that gives you a list of TODO that should be completed with
 
 # TODO
 
-- ~~ Add Heatmap  ~~
+- ~~Add Heatmap~~
